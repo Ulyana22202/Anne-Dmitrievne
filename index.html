@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Хочешь убежать от меня? 😏</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #1a0011 0%, #4a0020 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card {
+            background: rgba(255, 240, 245, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 200, 220, 0.2);
+            border-radius: 56px;
+            padding: 36px 28px 44px;
+            max-width: 460px;
+            width: 100%;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.7), 0 0 0 2px rgba(255, 100, 150, 0.1) inset;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 10;
+        }
+
+        .title {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: #ffe0ec;
+            text-shadow: 0 0 30px #ff2d75, 0 0 10px #b3004b;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #ffb3c9;
+            opacity: 0.9;
+            margin-bottom: 28px;
+            font-weight: 300;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+            padding-bottom: 16px;
+        }
+
+        .question {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 18px 10px;
+            border-radius: 60px;
+            margin-bottom: 30px;
+            line-height: 1.3;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .question span {
+            color: #ff5f9e;
+        }
+        .question .hint {
+            display: block;
+            width: 100%;
+            font-size: 1rem;
+            color: #ffb3c9;
+            opacity: 0.7;
+            margin-top: 8px;
+            font-weight: 400;
+        }
+
+        .big-heart-btn {
+            background: linear-gradient(135deg, #ff2d75, #ff0a5c);
+            border: none;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            font-size: 4.5rem;
+            cursor: pointer;
+            margin: 10px auto 15px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 60px rgba(255, 45, 117, 0.4), 0 8px 0 #92003b;
+            transition: all 0.2s ease;
+            position: relative;
+            color: white;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+        .big-heart-btn.show {
+            display: flex;
+        }
+        .big-heart-btn:active {
+            transform: scale(0.92);
+            box-shadow: 0 0 40px rgba(255, 45, 117, 0.6), 0 4px 0 #92003b;
+        }
+        .big-heart-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 80px rgba(255, 45, 117, 0.6), 0 8px 0 #92003b;
+        }
+        .big-heart-btn .heart-icon {
+            font-size: 4rem;
+            margin-bottom: 2px;
+        }
+        .big-heart-btn .heart-text {
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .compliments {
+            margin: 8px 0 12px;
+            font-size: 1.3rem;
+            color: #ffb3c9;
+            min-height: 50px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 30px;
+            border: 1px dashed rgba(255, 255, 255, 0.08);
+        }
+        .compliments.show {
+            display: flex;
+        }
+        .compliments .comp {
+            animation: fadeInComp 0.5s ease;
+            font-size: 1.3rem;
+            font-weight: 600;
+            background: linear-gradient(45deg, #ff6b9d, #ffb3d1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            padding: 2px 8px;
+        }
+        @keyframes fadeInComp {
+            0% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 36px;
+            position: relative;
+            min-height: 80px;
+            flex-wrap: wrap;
+        }
+
+        .btn-yes {
+            background: linear-gradient(135deg, #ff2d75, #ff0a5c);
+            border: none;
+            padding: 18px 44px;
+            border-radius: 60px;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: white;
+            box-shadow: 0 8px 0 #92003b, 0 12px 30px rgba(255, 0, 80, 0.4);
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            letter-spacing: 2px;
+            min-width: 130px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
+            z-index: 5;
+            position: relative;
+        }
+        .btn-yes:active {
+            transform: translateY(6px) !important;
+            box-shadow: 0 2px 0 #92003b !important;
+        }
+        .btn-yes:hover {
+            transform: translateX(80px) scale(0.7) !important;
+            opacity: 0.4;
+            transition-duration: 0.1s;
+        }
+        .btn-yes.caught {
+            animation: caughtAnim 0.6s ease;
+        }
+        @keyframes caughtAnim {
+            0% { transform: scale(1); }
+            30% { transform: scale(1.3); box-shadow: 0 0 50px #ff2d75; }
+            60% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+
+        .btn-no {
+            background: rgba(60, 60, 70, 0.6);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 18px 30px;
+            border-radius: 60px;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #b0b0b0;
+            cursor: not-allowed;
+            transition: all 0.4s ease;
+            min-width: 120px;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 0 #2a2a2a;
+            flex-shrink: 0;
+            z-index: 5;
+            opacity: 0.4;
+            transform: scale(0.95);
+            pointer-events: none;
+        }
+        .btn-no.active {
+            cursor: pointer;
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+            background: rgba(80, 80, 90, 0.7);
+            color: #d0d0d0;
+        }
+        .btn-no.active:hover {
+            transform: scale(1.03);
+            background: rgba(100, 100, 110, 0.8);
+            color: #ffffff;
+        }
+        .btn-no:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #2a2a2a;
+        }
+        .btn-no.unlocked {
+            background: linear-gradient(135deg, #ff2d75, #ff0a5c);
+            box-shadow: 0 8px 0 #92003b, 0 12px 30px rgba(255, 0, 80, 0.4);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: unlockPulse 0.5s ease;
+        }
+        @keyframes unlockPulse {
+            0% { transform: scale(1); }
+            30% { transform: scale(1.15); box-shadow: 0 0 60px #ff2d75; }
+            60% { transform: scale(0.95); }
+            100% { transform: scale(1.05); }
+        }
+
+        .date-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: none;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .date-section.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .date-section label {
+            color: #ffc1d4;
+            font-size: 1.2rem;
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+
+        .date-picker {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .date-picker input {
+            padding: 14px 18px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 1.1rem;
+            backdrop-filter: blur(4px);
+            outline: none;
+            flex: 1 1 140px;
+            text-align: center;
+            font-weight: 500;
+        }
+        .date-picker input:focus {
+            border-color: #ff2d75;
+            box-shadow: 0 0 25px rgba(255, 45, 117, 0.3);
+        }
+        .date-picker input::-webkit-calendar-picker-indicator {
+            filter: invert(0.8) sepia(1) hue-rotate(310deg) brightness(1.2);
+            cursor: pointer;
+        }
+
+        .btn-final {
+            background: linear-gradient(135deg, #ffb347, #ff7b00);
+            border: none;
+            padding: 18px 30px;
+            border-radius: 60px;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #1a0011;
+            box-shadow: 0 8px 0 #864200;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            margin-top: 8px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            letter-spacing: 2px;
+        }
+        .btn-final:active {
+            transform: translateY(6px);
+            box-shadow: 0 2px 0 #864200;
+        }
+
+        .hearts-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            overflow: hidden;
+        }
+        .heart-fly {
+            position: absolute;
+            font-size: 2.5rem;
+            animation: flyUp 3.5s ease-out forwards;
+            opacity: 0.9;
+            filter: drop-shadow(0 0 15px #ff2d75);
+        }
+        @keyframes flyUp {
+            0% { transform: translateY(100vh) scale(0) rotate(0deg); opacity: 0; }
+            20% { opacity: 1; transform: translateY(70vh) scale(1.3) rotate(20deg); }
+            100% { transform: translateY(-20vh) scale(0.4) rotate(720deg); opacity: 0; }
+        }
+
+        .adore-text {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #ff6b9d, #ffb3d1, #ff6b9d);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 2s linear infinite;
+            margin: 6px 0 10px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 40px rgba(255, 0, 100, 0.3);
+        }
+        @keyframes shimmer {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        .footnote {
+            color: #a06a7c;
+            font-size: 0.9rem;
+            margin-top: 6px;
+            opacity: 0.6;
+        }
+
+        .progress-text {
+            font-size: 1rem;
+            color: #ffb3c9;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 480px) {
+            .card { padding: 24px 16px 32px; border-radius: 40px; }
+            .title { font-size: 1.8rem; }
+            .question { font-size: 1.4rem; padding: 14px 6px; min-height: 70px; }
+            .buttons { gap: 12px; flex-wrap: wrap; }
+            .btn-yes { padding: 14px 28px; font-size: 1.6rem; min-width: 100px; }
+            .btn-no { padding: 14px 20px; font-size: 1.4rem; min-width: 90px; }
+            .date-picker input { flex: 1 1 100px; font-size: 1rem; padding: 12px; }
+            .btn-final { font-size: 1.3rem; padding: 14px 20px; }
+            .adore-text { font-size: 1.4rem; }
+            .progress-text { font-size: 0.85rem; }
+            .big-heart-btn { width: 110px; height: 110px; font-size: 3.5rem; }
+            .big-heart-btn .heart-icon { font-size: 3rem; }
+            .compliments { font-size: 1rem; min-height: 40px; }
+            .compliments .comp { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card" id="mainCard">
+        <div class="title">💋 Лови момент</div>
+        <div class="subtitle">Только честно...</div>
+
+        <div class="question" id="questionText">
+            Хочешь <span>убежать</span> от меня? 🏃‍♀️
+            <span class="hint" id="hintText">👆 Поймай кнопку «ДА» 2 раза, чтобы активировать «НЕТ»</span>
+        </div>
+
+        <div class="buttons" id="buttonsContainer">
+            <button class="btn-yes" id="yesBtn">✅ ДА</button>
+            <button class="btn-no" id="noBtn">❌ НЕТ</button>
+        </div>
+
+        <div class="progress-text" id="progressText">🎯 Поймано: 0 / 2</div>
+
+        <button class="big-heart-btn" id="heartBtn">
+            <span class="heart-icon">❤️</span>
+            <span class="heart-text">НАЖМИ МЕНЯ</span>
+        </button>
+
+        <div class="compliments" id="complimentsContainer">
+            <span style="color: #a06a7c; font-size: 0.9rem; opacity: 0.6;">👆 Нажми на сердечко</span>
+        </div>
+
+        <div class="date-section" id="dateSection">
+            <label for="datePicker">📅 Выбери дату и время для поцелуев:</label>
+            <div class="date-picker">
+                <input type="datetime-local" id="datePicker" value="2026-06-20T20:00">
+            </div>
+            <button class="btn-final" id="finalBtn">💞 ЗАСТАВИТЬ МЕНЯ ЦЕЛОВАТЬ 💞</button>
+            <div class="footnote">* Кнопка «ДА» убегает, поймай её! 😂</div>
+        </div>
+    </div>
+
+    <div class="hearts-container" id="heartsContainer"></div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            const yesBtn = document.getElementById('yesBtn');
+            const noBtn = document.getElementById('noBtn');
+            const heartBtn = document.getElementById('heartBtn');
+            const complimentsContainer = document.getElementById('complimentsContainer');
+            const dateSection = document.getElementById('dateSection');
+            const finalBtn = document.getElementById('finalBtn');
+            const questionText = document.getElementById('questionText');
+            const hintText = document.getElementById('hintText');
+            const progressText = document.getElementById('progressText');
+            const datePicker = document.getElementById('datePicker');
+            const heartsContainer = document.getElementById('heartsContainer');
+            const buttonsContainer = document.getElementById('buttonsContainer');
+
+            let yesClicks = 0;
+            let isYesEscaping = false;
+            let noPressed = false;
+            let catches = 0;
+            const NEEDED_CATCHES = 2;
+            let isNoUnlocked = false;
+            let compIndex = 0;
+
+            const compliments = [
+                'Ты самая красивая 🌸',
+                'Ты нереально милая 💕',
+                'Твоя улыбка сносит крышу 😍',
+                'Ты — моё вдохновение ✨',
+                'Ты как солнышко ☀️',
+                'Обожаю твой смех 😄',
+                'Ты сводишь меня с ума 😏',
+                'Ты — лучшее, что было 💖',
+                'Ты моя радость 🥰',
+                'Ты совершенство ❤️‍🔥'
+            ];
+
+            function makeYesEscape() {
+                if (isYesEscaping) return;
+                isYesEscaping = true;
+
+                const rect = yesBtn.getBoundingClientRect();
+                const btnWidth = rect.width;
+                const btnHeight = rect.height;
+
+                const card = document.querySelector('.card');
+                const cardRect = card.getBoundingClientRect();
+                
+                const padding = 20;
+                const minX = cardRect.left + padding;
+                const maxX = cardRect.right - btnWidth - padding;
+                const minY = cardRect.top + padding;
+                const maxY = cardRect.bottom - btnHeight - padding;
+
+                let randomX = minX + Math.random() * (maxX - minX);
+                let randomY = minY + Math.random() * (maxY - minY);
+
+                if (randomX < 0) randomX = 10;
+                if (randomY < 0) randomY = 10;
+                if (randomX + btnWidth > window.innerWidth - 10) randomX = window.innerWidth - btnWidth - 10;
+                if (randomY + btnHeight > window.innerHeight - 10) randomY = window.innerHeight - btnHeight - 10;
+
+                yesBtn.style.transition = 'all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1)';
+                yesBtn.style.position = 'fixed';
+                yesBtn.style.left = randomX + 'px';
+                yesBtn.style.top = randomY + 'px';
+                yesBtn.style.transform = `scale(${0.6 + Math.random() * 0.4})`;
+                yesBtn.style.opacity = '0.4';
+                yesBtn.style.pointerEvents = 'none';
+
+                setTimeout(() => {
+                    yesBtn.style.pointerEvents = 'auto';
+                    yesBtn.style.opacity = '1';
+                }, 300);
+
+                setTimeout(() => {
+                    isYesEscaping = false;
+                }, 400);
+
+                yesClicks++;
+            }
+
+            yesBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                if (isYesEscaping) return;
+
+                if (catches >= NEEDED_CATCHES) {
+                    makeYesEscape();
+                    return;
+                }
+
+                catches++;
+                progressText.textContent = `🎯 Поймано: ${catches} / ${NEEDED_CATCHES}`;
+
+                yesBtn.classList.add('caught');
+                setTimeout(() => yesBtn.classList.remove('caught'), 600);
+
+                createHearts(5);
+
+                if (catches >= NEEDED_CATCHES) {
+                    hintText.textContent = '✅ Отлично! Теперь кнопка «НЕТ» активна! Нажимай!';
+                    progressText.textContent = '🎯 Поймано: 2 / 2 🎉';
+                    
+                    isNoUnlocked = true;
+                    noBtn.classList.remove('active');
+                    noBtn.classList.add('unlocked');
+                    noBtn.style.pointerEvents = 'auto';
+                    noBtn.style.cursor = 'pointer';
+                    noBtn.style.opacity = '1';
+                    
+                    for (let i = 0; i < 5; i++) {
+                        setTimeout(() => createHearts(8), i * 200);
+                    }
+                }
+
+                setTimeout(() => {
+                    makeYesEscape();
+                }, 300);
+            });
+
+            yesBtn.addEventListener('mouseenter', function(e) {
+                if (!isYesEscaping) {
+                    makeYesEscape();
+                }
+            });
+
+            noBtn.addEventListener('click', function() {
+                if (!isNoUnlocked || noPressed) return;
+                if (catches < NEEDED_CATCHES) return;
+                noPressed = true;
+
+                questionText.innerHTML = `Ты самая <span>вредная</span> 🥺`;
+                hintText.style.display = 'none';
+
+                buttonsContainer.style.display = 'none';
+                progressText.style.display = 'none';
+
+                heartBtn.classList.add('show');
+                complimentsContainer.classList.add('show');
+
+                dateSection.classList.add('active');
+
+                for (let i = 0; i < 8; i++) {
+                    setTimeout(() => createHearts(5), i * 120);
+                }
+                setTimeout(() => {
+                    for (let i = 0; i < 6; i++) {
+                        setTimeout(() => createHearts(4), i * 150);
+                    }
+                }, 1200);
+                setTimeout(() => {
+                    createHearts(20);
+                }, 2500);
+            });
+
+            heartBtn.addEventListener('click', function() {
+                const comp = compliments[compIndex % compliments.length];
+                compIndex++;
+
+                const span = document.createElement('span');
+                span.className = 'comp';
+                span.textContent = comp;
+                complimentsContainer.appendChild(span);
+
+                const hint = complimentsContainer.querySelector('span[style]');
+                if (hint) hint.style.display = 'none';
+
+                createHearts(6);
+
+                setTimeout(() => {
+                    span.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
+
+                const items = complimentsContainer.querySelectorAll('.comp');
+                if (items.length > 8) {
+                    items[0].remove();
+                }
+            });
+
+            finalBtn.addEventListener('click', function() {
+                const dateVal = datePicker.value;
+                if (!dateVal) {
+                    alert('🥺 Выбери дату и время! Я хочу знать, когда целовать тебя.');
+                    return;
+                }
+
+                const dateObj = new Date(dateVal);
+                const options = {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                };
+                const formattedDate = dateObj.toLocaleDateString('ru-RU', options);
+
+                const card = document.getElementById('mainCard');
+                card.innerHTML = `
+                    <div style="padding: 10px 0;">
+                        <div style="font-size: 4rem; margin-bottom: 10px;">💋💖💋</div>
+                        <div style="font-size: 2.8rem; font-weight: 800; color: #ffb3d1; margin: 10px 0;">
+                            Я ТЕБЯ ОБОЖАЮ!
+                        </div>
+                        <div style="font-size: 1.6rem; color: #fff; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 40px; margin: 20px 0; border: 1px solid rgba(255,255,255,0.1);">
+                            📍 Назначена встреча:<br>
+                            <span style="font-weight: 700; color: #ff88bb; font-size: 1.8rem;">${formattedDate}</span>
+                        </div>
+                        <div style="font-size: 1.8rem; color: #ffb3c9; margin: 20px 0;">
+                            Жду не дождусь! 🥰
+                        </div>
+                        <div style="font-size: 3rem; letter-spacing: 10px;">❤️‍🔥❤️‍🔥❤️‍🔥</div>
+                        <div style="margin-top: 20px; font-size: 0.9rem; color: #a06a7c;">
+                            Ты — лучшее, что со мной случалось.
+                        </div>
+                    </div>
+                `;
+
+                for (let i = 0; i < 6; i++) {
+                    setTimeout(() => createHearts(18), i * 300);
+                }
+                setTimeout(() => {
+                    for (let i = 0; i < 4; i++) {
+                        setTimeout(() => createHearts(12), i * 250);
+                    }
+                }, 2000);
+                setTimeout(() => {
+                    createHearts(30);
+                }, 4000);
+            });
+
+            function createHearts(count = 8) {
+                const container = heartsContainer;
+                const emojis = ['❤️', '💖', '💗', '💓', '❤️‍🔥', '💋', '✨', '💝', '🩷', '♥️', '💕', '💞'];
+                for (let i = 0; i < count; i++) {
+                    const heart = document.createElement('div');
+                    heart.className = 'heart-fly';
+                    heart.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    const size = 1.5 + Math.random() * 2.8;
+                    heart.style.fontSize = `${size}rem`;
+                    heart.style.left = `${Math.random() * 100}%`;
+                    heart.style.animationDuration = `${2.5 + Math.random() * 3}s`;
+                    heart.style.animationDelay = `${Math.random() * 0.8}s`;
+                    heart.style.transform = `rotate(${Math.random() * 60 - 30}deg)`;
+                    container.appendChild(heart);
+
+                    setTimeout(() => {
+                        if (heart.parentNode) heart.remove();
+                    }, 4500);
+                }
+            }
+
+            window.addEventListener('load', function() {
+                setTimeout(() => createHearts(4), 300);
+                setTimeout(() => createHearts(3), 1000);
+                
+                noBtn.style.pointerEvents = 'none';
+                noBtn.style.opacity = '0.4';
+                noBtn.style.cursor = 'not-allowed';
+                
+                heartBtn.classList.remove('show');
+                complimentsContainer.classList.remove('show');
+                
+                setTimeout(() => {
+                    if (yesBtn.style.display !== 'none') {
+                        makeYesEscape();
+                    }
+                }, 500);
+            });
+
+            setTimeout(() => {
+                if (yesBtn.style.display !== 'none' && !isYesEscaping && catches < NEEDED_CATCHES) {
+                    makeYesEscape();
+                }
+            }, 1500);
+
+            document.addEventListener('selectstart', function(e) {
+                if (e.target.closest('.card')) e.preventDefault();
+            });
+
+            yesBtn.addEventListener('touchstart', function(e) {}, { passive: true });
+
+            console.log('💘 Готово! Сердечко с комплиментами появится на втором этапе!');
+        })();
+    </script>
+
+</body>
+</html>
