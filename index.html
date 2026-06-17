@@ -191,6 +191,7 @@
             flex-shrink: 0;
             z-index: 5;
             position: relative;
+            touch-action: manipulation;
         }
         .btn-yes:active {
             transform: translateY(6px) !important;
@@ -571,11 +572,9 @@
                 }, 300);
             });
 
-            yesBtn.addEventListener('mouseenter', function(e) {
-                if (!isYesEscaping) {
-                    makeYesEscape();
-                }
-            });
+            yesBtn.addEventListener('touchstart', function(e) {
+                // Для телефона — просто позволяем клику сработать
+            }, { passive: true });
 
             noBtn.addEventListener('click', function() {
                 if (!isNoUnlocked || noPressed) return;
@@ -731,9 +730,7 @@
                 if (e.target.closest('.card')) e.preventDefault();
             });
 
-            yesBtn.addEventListener('touchstart', function(e) {}, { passive: true });
-
-            console.log('💘 Готово! Сердечко с комплиментами появится на втором этапе!');
+            console.log('💘 Готово! Теперь кнопка "ДА" работает на телефоне!');
         })();
     </script>
 
