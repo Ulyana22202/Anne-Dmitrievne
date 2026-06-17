@@ -166,7 +166,7 @@
             gap: 30px;
             margin-bottom: 36px;
             position: relative;
-            min-height: 80px;
+            min-height: 120px;
             flex-wrap: wrap;
         }
 
@@ -189,8 +189,6 @@
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
             transition: all 0.15s ease;
-            /* Увеличиваем область касания */
-            padding: 22px 50px;
         }
         .btn-yes:active {
             transform: scale(0.95) !important;
@@ -386,7 +384,7 @@
             .card { padding: 24px 16px 32px; border-radius: 40px; }
             .title { font-size: 1.8rem; }
             .question { font-size: 1.4rem; padding: 14px 6px; min-height: 70px; }
-            .buttons { gap: 12px; flex-wrap: wrap; }
+            .buttons { gap: 12px; flex-wrap: wrap; min-height: 100px; }
             .btn-yes { padding: 18px 32px; font-size: 1.6rem; min-width: 100px; }
             .btn-no { padding: 14px 20px; font-size: 1.4rem; min-width: 90px; }
             .date-picker input { flex: 1 1 100px; font-size: 1rem; padding: 12px; }
@@ -462,6 +460,7 @@
             const NEEDED_CATCHES = 2;
             let isNoUnlocked = false;
             let compIndex = 0;
+            let escapeInterval = null;
 
             const compliments = [
                 'Ты самая красивая 🌸',
@@ -476,13 +475,10 @@
                 'Ты совершенство ❤️‍🔥'
             ];
 
-            function makeYesEscape() {
-                if (isYesEscaping) return;
-                isYesEscaping = true;
-
+            function getRandomPosition() {
                 const rect = yesBtn.getBoundingClientRect();
-                const btnWidth = rect.width;
-                const btnHeight = rect.height;
+                const btnWidth = rect.width || 130;
+                const btnHeight = rect.height || 70;
 
                 const card = document.querySelector('.card');
                 const cardRect = card.getBoundingClientRect();
@@ -490,23 +486,34 @@
                 const padding = 20;
                 const minX = cardRect.left + padding;
                 const maxX = cardRect.right - btnWidth - padding;
-                const minY = cardRect.top + padding;
+                const minY = cardRect.top + padding + 60;
                 const maxY = cardRect.bottom - btnHeight - padding;
 
                 let randomX = minX + Math.random() * (maxX - minX);
                 let randomY = minY + Math.random() * (maxY - minY);
 
-                if (randomX < 0) randomX = 10;
-                if (randomY < 0) randomY = 10;
+                if (randomX < 10) randomX = 10;
+                if (randomY < 10) randomY = 10;
                 if (randomX + btnWidth > window.innerWidth - 10) randomX = window.innerWidth - btnWidth - 10;
                 if (randomY + btnHeight > window.innerHeight - 10) randomY = window.innerHeight - btnHeight - 10;
 
+                return { x: randomX, y: randomY };
+            }
+
+            function makeYesEscape() {
+                if (isYesEscaping) return;
+                if (catches >= NEEDED_CATCHES) return;
+                
+                isYesEscaping = true;
+
+                const pos = getRandomPosition();
+
                 yesBtn.style.transition = 'all 0.15s ease';
                 yesBtn.style.position = 'fixed';
-                yesBtn.style.left = randomX + 'px';
-                yesBtn.style.top = randomY + 'px';
-                yesBtn.style.transform = `scale(0.9)`;
-                yesBtn.style.opacity = '0.7';
+                yesBtn.style.left = pos.x + 'px';
+                yesBtn.style.top = pos.y + 'px';
+                yesBtn.style.transform = 'scale(0.95)';
+                yesBtn.style.opacity = '0.8';
 
                 setTimeout(() => {
                     yesBtn.style.opacity = '1';
@@ -515,18 +522,34 @@
 
                 setTimeout(() => {
                     isYesEscaping = false;
-                }, 300);
+                }, 250);
             }
 
-            // === КНОПКА "ДА" — УБЕГАЕТ, НО ЕЁ МОЖНО НАЖАТЬ! ===
+            function startEscaping() {
+                if (escapeInterval) clearInterval(escapeInterval);
+                if (catches >= NEEDED_CATCHES) return;
+                
+                escapeInterval = setInterval(() => {
+                    if (!isYesEscaping && catches < NEEDED_CATCHES) {
+                        makeYesEscape();
+                    }
+                }, 700);
+            }
+
+            function stopEscaping() {
+                if (escapeInterval) {
+                    clearInterval(escapeInterval);
+                    escapeInterval = null;
+                }
+            }
+
+            // === КНОПКА "ДА" ===
             yesBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
 
                 if (catches >= NEEDED_CATCHES) return;
 
-                // Если кнопка сейчас убегает — даём шанс поймать
-                // Считаем как пойманную!
                 catches++;
                 progressText.textContent = `🎯 Поймано: ${catches} / ${NEEDED_CATCHES}`;
 
@@ -546,16 +569,23 @@
                     noBtn.style.cursor = 'pointer';
                     noBtn.style.opacity = '1';
                     
+                    stopEscaping();
+                    
+                    // Возвращаем кнопку на место
+                    yesBtn.style.position = 'relative';
+                    yesBtn.style.left = 'auto';
+                    yesBtn.style.top = 'auto';
+                    yesBtn.style.transform = 'scale(1)';
+                    yesBtn.style.opacity = '1';
+                    
                     for (let i = 0; i < 5; i++) {
                         setTimeout(() => createHearts(8), i * 200);
                     }
-                }
-
-                // После клика — убегаем (если ещё не поймали 2 раза)
-                if (catches < NEEDED_CATCHES) {
+                } else {
+                    // Продолжаем убегать
                     setTimeout(() => {
                         makeYesEscape();
-                    }, 200);
+                    }, 300);
                 }
             });
 
@@ -566,9 +596,9 @@
                 }
             });
 
-            // Для телефона — убегаем при касании, но если успели нажать — засчитываем
+            // Для телефона — касание
             yesBtn.addEventListener('touchstart', function(e) {
-                // Не блокируем — даём клику сработать
+                // Просто даём клику сработать
             }, { passive: true });
 
             // === КНОПКА "НЕТ" ===
@@ -576,6 +606,8 @@
                 if (!isNoUnlocked || noPressed) return;
                 if (catches < NEEDED_CATCHES) return;
                 noPressed = true;
+
+                stopEscaping();
 
                 questionText.innerHTML = `Ты самая <span>вредная</span> 🥺`;
                 hintText.style.display = 'none';
@@ -711,26 +743,20 @@
                 heartBtn.classList.remove('show');
                 complimentsContainer.classList.remove('show');
                 
-                // Первое убегание через 0.5 сек
+                // Запускаем убегание
                 setTimeout(() => {
                     if (yesBtn.style.display !== 'none') {
+                        startEscaping();
                         makeYesEscape();
                     }
                 }, 600);
             });
 
-            // Повторное убегание через 2 сек
-            setTimeout(() => {
-                if (yesBtn.style.display !== 'none' && !isYesEscaping && catches < NEEDED_CATCHES) {
-                    makeYesEscape();
-                }
-            }, 2000);
-
             document.addEventListener('selectstart', function(e) {
                 if (e.target.closest('.card')) e.preventDefault();
             });
 
-            console.log('💘 Кнопка "ДА" убегает, но её можно поймать!');
+            console.log('💘 Кнопка "ДА" прыгает по экрану! Лови её!');
         })();
     </script>
 
